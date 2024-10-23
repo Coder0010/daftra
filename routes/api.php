@@ -1,6 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Api\Auth\LoginController;
+use App\Http\Controllers\Api\Auth\LogoutController;
+use App\Http\Controllers\Api\Auth\ProfileController;
+use App\Http\Controllers\Api\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,3 +16,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::post('/register', RegisterController::class);
+Route::post('/login', LoginController::class);
+
+Route::middleware('auth:api')->group(function () {
+    Route::post('/logout', LogoutController::class);
+    Route::get('/profile', ProfileController::class);
+});
