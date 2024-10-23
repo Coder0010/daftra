@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
@@ -50,5 +49,10 @@ class User extends Authenticatable
         static::creating(function ($user) {
             $user->email_verified_at = now();
         });
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class)->with('products')->orderBy('orders.created_at', 'desc');
     }
 }
