@@ -7,7 +7,6 @@ use App\Http\Requests\Api\OrdersRequest\ShowOrderRequest;
 use App\Http\Requests\Api\OrdersRequest\StoreOrderRequest;
 use App\Http\Requests\Api\OrdersRequest\UpdateOrderRequest;
 use App\Http\Resources\OrderResource;
-use App\Http\Resources\ProductResource;
 use App\Http\Services\OrderService;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -27,7 +26,7 @@ class OrderController extends Controller
 
         $cacheKey = "orders_page_{$page}";
 
-        $results = Cache::remember($cacheKey, 5, function (){
+        $results = Cache::remember($cacheKey, 5, function () {
             return Order::latest()
                 ->myOrders()
                 ->paginate(10);
@@ -60,6 +59,23 @@ class OrderController extends Controller
             DB::commit();
             return OrderResource::make($order)->additional([
                 'message' => 'Order created successfully.'
+            ])->response()->setStatusCode(Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            DB::rollback();
+        }
+        return response()->json([
+            'message' => $e->getMessage()
+        ], Response::HTTP_BAD_REQUEST);
+    }
+
+    public function update(UpdateOrderRequest $request, Order $order)
+    {
+        try {
+            DB::beginTransaction();
+            $this->orderService->update(data: $request->validated(), order: $order);
+            DB::commit();
+            return OrderResource::make($order->refresh())->additional([
+                'message' => 'Order updated successfully.'
             ])->response()->setStatusCode(Response::HTTP_CREATED);
         } catch (\Exception $e) {
             DB::rollback();

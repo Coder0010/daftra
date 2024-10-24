@@ -32,5 +32,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/orders', [OrderController::class, 'index']);
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/orders/{order}', [OrderController::class, 'show']);
+    Route::match(['put', 'patch'], '/orders/{order}', [OrderController::class, 'update']);
 
 });
+

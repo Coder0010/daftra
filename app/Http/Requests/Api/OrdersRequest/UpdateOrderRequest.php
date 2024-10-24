@@ -43,13 +43,20 @@ class UpdateOrderRequest extends FormRequest
                     $index = explode('.', $attribute)[1];
                     $productId = request()->input("products.$index.product_id");
 
-                    // Find the product by ID
                     $product = Product::find($productId);
 
-                    // Custom validation logic
+                    $order = $this->route('order');
+
+                    // Check if the product is already in the order
+                    $existingQuantity = 0;
+                    if ($order) {
+                        $existingProduct = $order->products()->where('product_id', $productId)->first();
+                        $existingQuantity = $existingProduct ? $existingProduct->pivot->quantity : 0;
+                    }
+
                     if (!$product) {
                         $fail("The selected product (ID: $productId) is not available.");
-                    } elseif ($value > $product->stock_quantity) {
+                    } elseif (($value - $existingQuantity) > $product->stock_quantity) {
                         $fail(
                             "The requested quantity ($value) exceeds the available stock of $product->stock_quantity for product ID: $productId."
                         );
@@ -58,4 +65,5 @@ class UpdateOrderRequest extends FormRequest
             ],
         ];
     }
+
 }

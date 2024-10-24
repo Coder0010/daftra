@@ -29,7 +29,7 @@ class Order extends Model
 
     public function scopeMyOrders($query)
     {
-        return $query->where('user_id', 1);
+        return $query->where('user_id', auth()->id());
     }
 
     public function user(): BelongsTo

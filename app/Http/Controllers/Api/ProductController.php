@@ -9,7 +9,6 @@ use App\Http\Requests\Api\ProductsRequest\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Services\ProductService;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -84,7 +83,7 @@ class ProductController extends Controller
             DB::commit();
             return ProductResource::make($product->refresh())->additional([
                 'message' => 'Product updated successfully.'
-            ])->response()->setStatusCode(Response::HTTP_CREATED);
+            ])->response()->setStatusCode(Response::HTTP_OK);
         } catch (\Exception $e) {
             DB::rollback();
         }

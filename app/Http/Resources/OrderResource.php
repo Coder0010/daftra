@@ -15,6 +15,7 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'user_email' => optional($this->user)->email,
             'products' => $this->when('products', OrderProductDetailsResource::collection($this->products)),
         ];
